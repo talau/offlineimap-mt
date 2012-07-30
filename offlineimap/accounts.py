@@ -255,6 +255,12 @@ class SyncableAccount(Account):
                 if looping and self.sleeper() >= 2:
                     looping = 0
 
+    def get_local_folder(self, remotefolder):
+        """Return the corresponding local folder for a given remotefolder"""
+        return self.localrepos.getfolder(
+            remotefolder.getvisiblename().
+            replace(self.remoterepos.getsep(), self.localrepos.getsep()))
+
     def sync(self):
         """Synchronize the account once, then return
 
@@ -300,10 +306,14 @@ class SyncableAccount(Account):
             for remotefolder in remoterepos.getfolders():
                 # check for CTRL-C or SIGTERM
                 if Account.abort_NOW_signal.is_set(): break
-                if not remotefolder.sync_this:
-                    self.ui.debug('', "Not syncing filtered remote folder '%s'"
-                                  "[%s]" % (remotefolder, remoterepos))
-                    continue # Filtered out remote folder
+
+                localfolder = self.get_local_folder(remotefolder)
+
+                if not (
+                    remotefolder.sync_this_verbose()
+                    and localfolder.sync_this_verbose()):
+                    continue
+
                 thread = InstanceLimitedThread(\
                     instancename = 'FOLDER_' + self.remoterepos.getname(),
                     target = syncfolder,
@@ -367,16 +377,12 @@ def syncfolder(account, remotefolder, quick):
     ui.registerthread(account)
     try:
         # Load local folder.
-        localfolder = localrepos.\
-                      getfolder(remotefolder.getvisiblename().\
-                                replace(remoterepos.getsep(), localrepos.getsep()))
+        localfolder = account.get_local_folder(remotefolder)
 
         #Filtered folders on the remote side will not invoke this
         #function, but we need to NOOP if the local folder is filtered
         #out too:
-        if not localfolder.sync_this:
-            ui.debug('', "Not syncing filtered local folder '%s'" \
-                         % localfolder)
+        if not localfolder.sync_this_verbose():
             return
         # Write the mailboxes
         mbnames.add(account.name, localfolder.getname())

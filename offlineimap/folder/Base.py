@@ -31,8 +31,7 @@ class BaseFolder(object):
         :para name: Path & name of folder minus root or reference
         :para repository: Repository() in which the folder is.
         """
-        self.sync_this = True
-        """Should this folder be included in syncing?"""
+        self._sync_this = repository.should_sync_folder(name)
         self.ui = getglobalui()
         # Top level dir name is always ''
         self.name = name if not name == self.getsep() else ''
@@ -44,6 +43,20 @@ class BaseFolder(object):
         if self.visiblename == self.getsep():
             self.visiblename = ''
         self.config = repository.getconfig()
+
+    @property
+    def sync_this(self):
+        return self._sync_this
+
+    def sync_this_verbose(self):
+        if not self.sync_this:
+            locality = 'local' \
+                if self.repository == self.repository.account.localrepos \
+                else 'remote'
+            self.ui.debug(
+                '', "Not syncing filtered %s folder '%s'[%s]"
+                % (locality, self, self.repository))
+        return self.sync_this
 
     def getname(self):
         """Returns name"""
