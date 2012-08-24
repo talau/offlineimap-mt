@@ -152,8 +152,15 @@ class MaildirRepository(BaseRepository):
         # Iterate over directories in top & top itself.
         for dirname in os.listdir(toppath) + ['']:
             self.debug("  dirname = %s" % dirname)
-            if dirname == '' and extension is not None:
-                self.debug('  skip this entry (already scanned)')
+            if dirname == '':
+                if extension is not None:
+                    # We are skipping this because it has already be
+                    # scanned
+                    self.debug('  skip this entry (already scanned)')
+                else:
+                    # We are skipping this because a directory with an
+                    # empty path name does not make sense
+                    self.debug('  skip this entry (None)')
                 continue
             if dirname in ['cur', 'new', 'tmp']:
                 self.debug("  skip this entry (Maildir special)")
