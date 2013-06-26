@@ -427,6 +427,8 @@ class BaseFolder(object):
 
         This function checks and protects us from action in ryrun mode.
         """
+        return
+
         deletelist = filter(lambda uid: uid>=0 \
                                 and not self.uidexists(uid),
                             statusfolder.getmessageuidlist())
@@ -523,7 +525,6 @@ class BaseFolder(object):
         :param statusfolder: LocalStatus instance to sync against.
         """
         passes = [('copying messages'       , self.syncmessagesto_copy),
-                  ('deleting messages'      , self.syncmessagesto_delete),
                   ('syncing flags'          , self.syncmessagesto_flags)]
 
         for (passdesc, action) in passes:

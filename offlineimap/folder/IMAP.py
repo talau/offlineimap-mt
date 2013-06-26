@@ -721,6 +721,8 @@ class IMAPFolder(BaseFolder):
         self.deletemessages_noconvert(uidlist)
 
     def deletemessages_noconvert(self, uidlist):
+        return
+
         # Weed out ones not in self.messagelist
         uidlist = [uid for uid in uidlist if self.uidexists(uid)]
         if not len(uidlist):

@@ -138,6 +138,8 @@ class LocalStatusFolder(BaseFolder):
         self.deletemessages([uid])
 
     def deletemessages(self, uidlist):
+        return
+
         # Weed out ones not in self.messagelist
         uidlist = [uid for uid in uidlist if uid in self.messagelist]
         if not len(uidlist):

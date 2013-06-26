@@ -357,6 +357,8 @@ class MaildirFolder(BaseFolder):
         :return: Nothing, or an Exception if UID but no corresponding file
                  found.
         """
+        return
+
         if not self.uidexists(uid):
             return
 
