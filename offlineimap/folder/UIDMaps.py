@@ -97,14 +97,14 @@ class MappedIMAPFolder(IMAPFolder):
 
         self.maplock.acquire()
         try:
-            # OK.  Now we've got a nice list.  First, delete things from the
-            # summary that have been deleted from the folder.
 
-            for luid in self.diskl2r.keys():
-                if not luid in reallist:
-                    ruid = self.diskl2r[luid]
-                    del self.diskr2l[ruid]
-                    del self.diskl2r[luid]
+            # # OK.  Now we've got a nice list.  First, delete things from the
+            # # summary that have been deleted from the folder.
+            # for luid in self.diskl2r.keys():
+            #     if not luid in reallist:
+            #         ruid = self.diskl2r[luid]
+            #         del self.diskr2l[ruid]
+            #         del self.diskl2r[luid]
 
             # Now, assign negative UIDs to local items.
             self._savemaps(dolock = 0)

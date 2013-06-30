@@ -307,6 +307,10 @@ class UIBase(object):
                             self.getnicename(srcrepos),
                             self.getnicename(destrepos)))
 
+    def cachingmessagesnomaxage(self, repos, folder):
+        """Called when syncflagsignoremaxage option is on. """
+        self.logger.info("Caching without maxage %s: %s" % (repos, folder))
+
     def skippingfolder(self, folder):
         """Called when a folder sync operation is started."""
         self.logger.info("Skipping %s (not changed)" % folder)

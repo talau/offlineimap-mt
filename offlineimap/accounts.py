@@ -29,6 +29,41 @@ try:
 except:
     pass # ok if this fails, we can do without
 
+# buffer of original values of maxage in the config
+maxage_orig = {}
+
+# buffer cachemessagelist of repositories
+#  * this is used to save bandwidth
+# key of dict: reponame + folder [ +  nomaxage]
+cachemessagelist = {}
+
+def cachemessagelistkey(reponame, foldername, nomaxage):
+    k = "%s%s" % (reponame, foldername)
+    if nomaxage:
+        k = k + "offma"
+    return k
+
+def addcachemessagelist(reponame, foldername, nomaxage, ml):
+    k = cachemessagelistkey(reponame, foldername, nomaxage)
+    cachemessagelist[k] = ml
+
+def getcachemessagelist(reponame, foldername, nomaxage):
+    k = cachemessagelistkey(reponame, foldername, nomaxage)
+    if cachemessagelist.has_key(k):
+        return cachemessagelist[k]
+    else:
+        return None
+
+def processcachemessagelist(folder):
+    ui = getglobalui()
+    ml = getcachemessagelist(folder.repository.name, folder, True)
+    if ml == None:
+        ui.cachingmessagesnomaxage(folder.repository.name, folder)
+        folder.cachemessagelist()
+        addcachemessagelist(folder.repository.name, folder, True, folder.getmessagelist())
+    else:
+        folder.setmessagelist(ml)
+
 def getaccountlist(customconfig):
     return customconfig.getsectionlist('Account')
 
@@ -413,6 +448,7 @@ def syncfolder(account, remotefolder, quick):
         ui.syncingfolder(remoterepos, remotefolder, localrepos, localfolder)
         ui.loadmessagelist(localrepos, localfolder)
         localfolder.cachemessagelist()
+        addcachemessagelist(localfolder.repository.name, localfolder, False, localfolder.getmessagelist())
         ui.messagelistloaded(localrepos, localfolder, localfolder.getmessagecount())
 
         # If either the local or the status folder has messages and
@@ -437,6 +473,7 @@ def syncfolder(account, remotefolder, quick):
         # Load remote folder.
         ui.loadmessagelist(remoterepos, remotefolder)
         remotefolder.cachemessagelist()
+        addcachemessagelist(remotefolder.repository.name, remotefolder, False, remotefolder.getmessagelist())
         ui.messagelistloaded(remoterepos, remotefolder,
                              remotefolder.getmessagecount())
 

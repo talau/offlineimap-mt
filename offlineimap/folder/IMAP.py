@@ -202,6 +202,9 @@ class IMAPFolder(BaseFolder):
     def getmessagelist(self):
         return self.messagelist
 
+    def setmessagelist(self, newml):
+        self.messagelist = newml
+
     def getmessage(self, uid):
         """Retrieve message with UID from the IMAP server (incl body)
 
