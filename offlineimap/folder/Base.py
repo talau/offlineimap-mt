@@ -544,6 +544,11 @@ class BaseFolder(object):
                             if maxage != -1:
                                 offlineimap.accounts.maxage_orig[a] = maxage
                                 self.config.set("Account %s" % a, "maxage", '-1')
+                        maxage_syncflags = self.config.getdefaultint("general",
+                                                                     "maxage_syncflags", None)
+                        if maxage_syncflags:
+                            for a in self.config.getsectionlist('Account'):
+                                self.config.set("Account %s" % a, "maxage", str(maxage_syncflags))
                         offlineimap.accounts.processcachemessagelist(self)
                         offlineimap.accounts.processcachemessagelist(dstfolder)
                     else: # copying
