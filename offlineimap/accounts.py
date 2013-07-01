@@ -37,6 +37,9 @@ maxage_orig = {}
 # key of dict: reponame + folder [ +  nomaxage]
 cachemessagelist = {}
 
+# option from rc config
+syncflagsignoremaxage = True
+
 def cachemessagelistkey(reponame, foldername, nomaxage):
     k = "%s%s" % (reponame, foldername)
     if nomaxage:
@@ -55,6 +58,8 @@ def getcachemessagelist(reponame, foldername, nomaxage):
         return None
 
 def processcachemessagelist(folder):
+    """Function used only when config syncflagsignoremaxage is True and
+    the operation is sync."""
     ui = getglobalui()
     ml = getcachemessagelist(folder.repository.name, folder, True)
     if ml == None:
@@ -63,6 +68,7 @@ def processcachemessagelist(folder):
         addcachemessagelist(folder.repository.name, folder, True, folder.getmessagelist())
     else:
         folder.setmessagelist(ml)
+
 
 def getaccountlist(customconfig):
     return customconfig.getsectionlist('Account')
@@ -417,6 +423,10 @@ def syncfolder(account, remotefolder, quick):
 
     ui = getglobalui()
     ui.registerthread(account)
+
+    global syncflagsignoremaxage
+    syncflagsignoremaxage = account.getconfig().getdefaultboolean("general", "syncflagsignoremaxage",
+                                                                  True)
     try:
         # Load local folder.
         localfolder = account.get_local_folder(remotefolder)
@@ -448,7 +458,8 @@ def syncfolder(account, remotefolder, quick):
         ui.syncingfolder(remoterepos, remotefolder, localrepos, localfolder)
         ui.loadmessagelist(localrepos, localfolder)
         localfolder.cachemessagelist()
-        addcachemessagelist(localfolder.repository.name, localfolder, False, localfolder.getmessagelist())
+        if syncflagsignoremaxage:
+            addcachemessagelist(localfolder.repository.name, localfolder, False, localfolder.getmessagelist())
         ui.messagelistloaded(localrepos, localfolder, localfolder.getmessagecount())
 
         # If either the local or the status folder has messages and
@@ -473,7 +484,8 @@ def syncfolder(account, remotefolder, quick):
         # Load remote folder.
         ui.loadmessagelist(remoterepos, remotefolder)
         remotefolder.cachemessagelist()
-        addcachemessagelist(remotefolder.repository.name, remotefolder, False, remotefolder.getmessagelist())
+        if syncflagsignoremaxage:
+            addcachemessagelist(remotefolder.repository.name, remotefolder, False, remotefolder.getmessagelist())
         ui.messagelistloaded(remoterepos, remotefolder,
                              remotefolder.getmessagecount())
 

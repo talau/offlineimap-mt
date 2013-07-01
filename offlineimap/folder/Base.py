@@ -536,23 +536,26 @@ class BaseFolder(object):
             if offlineimap.accounts.Account.abort_NOW_signal.is_set():
                 break
             try:
-                if passdesc.find("syncing") != -1:
-                    for a in self.config.getsectionlist('Account'):
-                        maxage = self.config.getdefaultint("Account %s" % a,
+                if offlineimap.accounts.syncflagsignoremaxage:
+                    if passdesc.find("syncing") != -1:
+                        for a in self.config.getsectionlist('Account'):
+                            maxage = self.config.getdefaultint("Account %s" % a,
                                            "maxage", -1)
-                        if maxage != -1:
-                            offlineimap.accounts.maxage_orig[a] = maxage
-                            self.config.set("Account %s" % a, "maxage", '-1')
+                            if maxage != -1:
+                                offlineimap.accounts.maxage_orig[a] = maxage
+                                self.config.set("Account %s" % a, "maxage", '-1')
+                        offlineimap.accounts.processcachemessagelist(self)
+                        offlineimap.accounts.processcachemessagelist(dstfolder)
+                    else: # copying
+                        # restore old maxage config
+                        for a in self.config.getsectionlist('Account'):
+                            if offlineimap.accounts.maxage_orig.has_key(a):
+                                self.config.set("Account %s" % a, "maxage", str(offlineimap.accounts.maxage_orig[a]))
 
-                    offlineimap.accounts.processcachemessagelist(self)
-                    offlineimap.accounts.processcachemessagelist(dstfolder)
-                else: # copying
-                    for a in self.config.getsectionlist('Account'):
-                        if offlineimap.accounts.maxage_orig.has_key(a):
-                            self.config.set("Account %s" % a, "maxage", str(offlineimap.accounts.maxage_orig[a]))
-                    self.setmessagelist(offlineimap.accounts.getcachemessagelist(self.repository.name, self, False))
-                    dstfolder.setmessagelist(offlineimap.accounts.getcachemessagelist(dstfolder.repository.name, dstfolder, False))
-                action(dstfolder, statusfolder)
+                        self.setmessagelist(offlineimap.accounts.getcachemessagelist(self.repository.name, self, False))
+                        dstfolder.setmessagelist(offlineimap.accounts.getcachemessagelist(dstfolder.repository.name, dstfolder, False))
+                else:
+                    action(dstfolder, statusfolder)
             except (KeyboardInterrupt):
                 raise
             except OfflineImapError as e:
