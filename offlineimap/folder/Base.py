@@ -559,8 +559,7 @@ class BaseFolder(object):
 
                         self.setmessagelist(offlineimap.accounts.getcachemessagelist(self.repository.name, self, False))
                         dstfolder.setmessagelist(offlineimap.accounts.getcachemessagelist(dstfolder.repository.name, dstfolder, False))
-                else:
-                    action(dstfolder, statusfolder)
+                action(dstfolder, statusfolder)
             except (KeyboardInterrupt):
                 raise
             except OfflineImapError as e:
