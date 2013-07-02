@@ -46,6 +46,7 @@ def cachemessagelistkey(reponame, foldername, nomaxage):
         k = k + "offma"
     return k
 
+# FIXME: when maxage = -1: automatic set nomaxage to true
 def addcachemessagelist(reponame, foldername, nomaxage, ml):
     k = cachemessagelistkey(reponame, foldername, nomaxage)
     cachemessagelist[k] = ml
