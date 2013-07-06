@@ -425,13 +425,21 @@ def syncfolder(account, remotefolder, quick):
     ui = getglobalui()
     ui.registerthread(account)
 
+    config = account.getconfig()
+
     global syncflagsignoremaxage
-    syncflagsignoremaxage = account.getconfig().getdefaultboolean("general", "syncflagsignoremaxage",
+    syncflagsignoremaxage = config.getdefaultboolean("general", "syncflagsignoremaxage",
                                                                   True)
     if syncflagsignoremaxage:
         # free lists between folders
         maxage_orig = {}
         cachemessagelist = {}
+
+    # restore old maxage config
+    global maxage_orig
+    for a in config.getsectionlist('Account'):
+        if maxage_orig.has_key(a):
+            config.set("Account %s" % a, "maxage", str(maxage_orig[a]))
 
     try:
         # Load local folder.

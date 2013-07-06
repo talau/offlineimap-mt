@@ -553,11 +553,6 @@ class BaseFolder(object):
                         offlineimap.accounts.processcachemessagelist(self)
                         offlineimap.accounts.processcachemessagelist(dstfolder)
                     else: # copying
-                        # restore old maxage config
-                        for a in self.config.getsectionlist('Account'):
-                            if offlineimap.accounts.maxage_orig.has_key(a):
-                                self.config.set("Account %s" % a, "maxage", str(offlineimap.accounts.maxage_orig[a]))
-
                         self.setmessagelist(offlineimap.accounts.getcachemessagelist(self.repository.name, self, False))
                         dstfolder.setmessagelist(offlineimap.accounts.getcachemessagelist(dstfolder.repository.name, dstfolder, False))
                 action(dstfolder, statusfolder)
