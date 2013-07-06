@@ -430,9 +430,9 @@ def syncfolder(account, remotefolder, quick):
     global syncflagsignoremaxage
     syncflagsignoremaxage = config.getdefaultboolean("general", "syncflagsignoremaxage",
                                                                   True)
+    global cachemessagelist
     if syncflagsignoremaxage:
         # free lists between folders
-        maxage_orig = {}
         cachemessagelist = {}
 
     # restore old maxage config
