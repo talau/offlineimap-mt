@@ -544,6 +544,7 @@ class BaseFolder(object):
                             if maxage != -1:
                                 offlineimap.accounts.maxage_orig[a] = maxage
                                 self.config.set("Account %s" % a, "maxage", '-1')
+                        # (by default check all messages) if you do not want to check all messages, set maxage_syncflags
                         maxage_syncflags = self.config.getdefaultint("general",
                                                                      "maxage_syncflags", None)
                         if maxage_syncflags:
