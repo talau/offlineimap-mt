@@ -428,6 +428,11 @@ def syncfolder(account, remotefolder, quick):
     global syncflagsignoremaxage
     syncflagsignoremaxage = account.getconfig().getdefaultboolean("general", "syncflagsignoremaxage",
                                                                   True)
+    if syncflagsignoremaxage:
+        # free lists between folders
+        maxage_orig = {}
+        cachemessagelist = {}
+
     try:
         # Load local folder.
         localfolder = account.get_local_folder(remotefolder)
